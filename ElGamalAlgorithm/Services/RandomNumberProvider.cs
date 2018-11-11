@@ -1,0 +1,17 @@
+﻿using System;
+
+namespace ElGamal.Services
+{
+    public class RandomNumberProvider : IRandomNumberProvider
+    {
+        public static readonly Random Random = new Random();
+
+        public BigInteger GeneratePositiveNumberLessThan(BigInteger limit)
+        {
+            //TODO generates at least one bit less number  
+            BigInteger randomNumber = new BigInteger();
+            randomNumber.genRandomBits(limit.bitCount() - 1, Random);
+            return randomNumber;
+        }
+    }
+}
