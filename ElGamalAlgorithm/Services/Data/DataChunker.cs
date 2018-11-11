@@ -23,6 +23,20 @@ namespace ElGamal.Services.Data
             return blocks;
         }
 
+        public BigInteger[] BytesToBigIntegers(byte[] encryptedBytes, int blockSize)
+        {
+            BigInteger[] blocks = new BigInteger[encryptedBytes.Length/blockSize];
+
+            for(int i = 0; i < encryptedBytes.Length / blockSize; i++)
+            {
+                byte[] block = new byte[blockSize];
+                Array.Copy(encryptedBytes, i * blockSize, block, 0, blockSize);
+                blocks[i] = new BigInteger(block);
+            }
+
+            return blocks;
+        }
+
         private byte[] AddPadding(byte[] message, int blockSize)
         {
             if (blockSize > 255)
@@ -56,20 +70,20 @@ namespace ElGamal.Services.Data
             }
         }
 
-        public byte[] MergeData(BigInteger[] decryptedValues)
+        public byte[] MergeData(BigInteger[] decryptedValues, int blockSize)
         {
             List<byte> decryptedBytes = new List<byte>();
 
             foreach (BigInteger decryptedValue in decryptedValues)
             {
                 var valueBytes = decryptedValue.getBytes();
-                decryptedBytes.AddRange(RemovePadding(valueBytes, valueBytes.Length));
+                decryptedBytes.AddRange(valueBytes);
             }
 
-            return decryptedBytes.ToArray();
+            return RemovePadding(decryptedBytes.ToArray(), blockSize);
         }
 
-        private byte[] RemovePadding(byte[] message, int keyLength)
+        private byte[] RemovePadding(byte[] message, int blockSize)
         {
             //find last byte
             byte lastByte = message.Last();
@@ -80,7 +94,7 @@ namespace ElGamal.Services.Data
             }
 
             //remove correct number of bytes (just dont copy them)
-            byte[] messageWithoutPadding = new byte[message.Length - keyLength - lastByte];
+            byte[] messageWithoutPadding = new byte[message.Length - lastByte];
 
             Array.Copy(message, 0, messageWithoutPadding, 0, messageWithoutPadding.Length);
 

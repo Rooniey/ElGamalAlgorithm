@@ -1,0 +1,243 @@
+﻿<UserControl x:Class="Gui.Views.FormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:Gui.Views"
+             xmlns:converters="clr-namespace:Gui.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="StackPanel">
+                <Setter Property="Margin" Value="0 20 0 0" />
+            </Style>
+            <Style TargetType="TextBox" x:Key="InlineTextBox">
+                <Setter Property="VerticalAlignment" Value="Top" />
+                <Setter Property="Height" Value="200" />
+                <Setter Property="AcceptsReturn" Value="True" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+            </Style>
+            <sys:Boolean x:Key="True">True</sys:Boolean>
+            <sys:Boolean x:Key="False">False</sys:Boolean>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- LEFT COLUMN CIPHERKEY -->
+        <Grid Grid.Row="0"
+              Grid.Column="0"
+              Margin="32 0 0 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadlineTextBlock}">Cipherkey</TextBlock>
+
+            <StackPanel Grid.Row="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
+                <ComboBox
+                    materialDesign:HintAssist.Hint="Cypherkey length"
+                    materialDesign:HintAssist.FloatingScale="1.5"
+                    materialDesign:HintAssist.FloatingOffset="0, -24"
+                    MinWidth="150"
+                    ItemsSource="{Binding KeyLengths}"
+                    SelectedValue="{Binding Cipherkey.CipherkeyLength}">
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    Grid.Row="2">
+                <ComboBox
+                materialDesign:HintAssist.Hint="Cypherkey encoding"
+                materialDesign:HintAssist.FloatingScale="1.5"
+                materialDesign:HintAssist.FloatingOffset="0, -24"
+                MinWidth="150"
+                ItemsSource="{Binding Encodings}"
+                SelectedValue="{Binding Cipherkey.SelectedEncoding}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Grid.Row="3">
+                <materialDesign:PackIcon Kind="Key"
+                                         MinWidth="30"
+                                         MinHeight="30"
+                                         Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                         VerticalAlignment="Center" />
+                <TextBox
+                    x:Name="Cipherkey_Cipherkey"
+                    Margin="10 0 0 0"
+                    MinWidth="250"
+                    MaxWidth="300"
+                    materialDesign:HintAssist.Hint="Cipherkey" />
+                <TextBlock VerticalAlignment="Bottom"
+                           Margin="10 0 0 0">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0}/{1}">
+                            <Binding Path="Cipherkey.CurrentLength" />
+                            <Binding Path="Cipherkey.CipherkeyLength" UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <!-- RIGHT COLUMN DATA SOURCE -->
+        <Grid Grid.Row="0"
+              Grid.Column="1"
+              Margin="10 0 10 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadlineTextBlock}">Choose source of data to encryption:</TextBlock>
+
+            <CheckBox
+                x:Name="IsFileEncryption"
+                Grid.Row="1"
+                Margin="0 20 0 25"
+                Style="{StaticResource MaterialDesignCheckBox}">
+                Encrypt file
+            </CheckBox>
+
+            <Grid Grid.Row="2"
+                  Visibility="{Binding Path=IsFileEncryption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={StaticResource False}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="0 0 0 20">
+                    <ComboBox
+                        materialDesign:HintAssist.Hint="Cypherkey encoding"
+                        materialDesign:HintAssist.FloatingScale="1.5"
+                        materialDesign:HintAssist.FloatingOffset="0, -24"
+                        MinWidth="150"
+                        ItemsSource="{Binding Encodings}"
+                        SelectedValue="{Binding TextSource.Encoding}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="0 0 10 0"
+                    x:Name="TextSource_Text"
+                    Style="{StaticResource InlineTextBox}"
+                    materialDesign:HintAssist.Hint="Plaintext to encrypt"
+                    IsEnabled="{Binding Path=IsFileEncryption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={StaticResource False}}" />
+
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    x:Name="EncryptedString"
+                    Margin="0 0 10 0"
+                    Style="{StaticResource InlineTextBox}"
+                    materialDesign:HintAssist.Hint="Encrypted text"
+                    IsEnabled="false" />
+
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    x:Name="DecryptedString"
+                    Style="{StaticResource InlineTextBox}"
+                    materialDesign:HintAssist.Hint="Decrypted text"
+                    IsEnabled="false" />
+            </Grid>
+
+            <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Grid.Row="3"
+                            Visibility="{Binding Path=IsFileEncryption, Converter={StaticResource BoolToVisibilityConverter}}">
+                <materialDesign:PackIcon Kind="File"
+                                             MinWidth="30"
+                                             MinHeight="30"
+                                             Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                             VerticalAlignment="Center" />
+                <TextBox
+                        x:Name="FileDataSource_FilePath"
+                        Margin="10 0 20 0"
+                        MinWidth="250"
+                        MaxWidth="300"
+                        materialDesign:HintAssist.Hint="Filepath" />
+                <Button
+                        x:Name="ChooseFile"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        MinWidth="200">Explore files</Button>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel 
+            Grid.Row="1"
+            Grid.Column="1"
+            Orientation="Horizontal"
+            HorizontalAlignment="Right">
+            <Button
+                x:Name="Encrypt"
+                Margin="0 30 20 32"
+                HorizontalAlignment="Right"
+                Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                Width="200">Encrypt</Button>
+            <Button
+                x:Name="Decrypt"
+                Margin="0 30 0 32"
+                HorizontalAlignment="Right"
+                Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                Width="200">Decrypt</Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

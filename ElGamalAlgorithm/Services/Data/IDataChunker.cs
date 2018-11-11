@@ -3,6 +3,7 @@
     public interface IDataChunker
     {
         BigInteger[] ChunkData(byte[] inputData, int blockSize);
-        byte[] MergeData(BigInteger[] inputData);
+        BigInteger[] BytesToBigIntegers(byte[] encryptedValues, int blockSize);
+        byte[] MergeData(BigInteger[] encryptedValues, int blockSize);
     }
 }

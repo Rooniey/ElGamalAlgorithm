@@ -43,5 +43,29 @@ namespace ElGamalTests
             });
         }
 
+        [TestMethod]
+        public void When_BytesToBigIntegersCalledWith_ByteLengthMultipleOfBlockSize_Should_ReturnCorrectData()
+        {
+
+            byte[] sampleInput = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0x02, 0x02 };
+            BigInteger[] result = _dataChunker.BytesToBigIntegers(sampleInput, _blockSize);
+            result.Should().BeEquivalentTo(new BigInteger[]
+            {
+                new BigInteger(new byte[] {0xFF, 0xFF, 0xFF}),
+                new BigInteger(new byte[] {0xFF, 0x02, 0x02})
+            });
+        }
+
+        [TestMethod]
+        public void When_MergeDataCalledWith_MultipleBigIntegers_Should_ReturnCorrectData()
+        {
+
+            BigInteger[] sampleInput = new BigInteger[]{ new BigInteger(new byte[]{ 0xff, 0xac, 0xff }), new BigInteger(new byte[] { 0xff, 0xac, 0x01 }) };
+            byte[] result = _dataChunker.MergeData(sampleInput, _blockSize);
+            result.Should().BeEquivalentTo(new byte[]
+            {
+                0xff, 0xac, 0xff, 0xff, 0xac
+            });
+        }
     }
 }

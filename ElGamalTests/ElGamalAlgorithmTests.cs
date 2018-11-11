@@ -1,5 +1,9 @@
-﻿using ElGamal;
+﻿using System;
+using System.Collections.Generic;
+using ElGamal;
 using ElGamal.Model;
+using ElGamal.Services;
+using ElGamal.Services.Data;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -46,6 +50,37 @@ namespace ElGamalTests
         {
             BigInteger message = _algorithm.Decrypt(_encryptedMessage, _privateKey);
             message.Should().BeEquivalentTo(_message);
+        }
+
+        [TestMethod]
+        public void When_EncryptCalledWithPaddedValues_Should_ReturnPaddedData()
+        {
+            DataChunker _chunker = new DataChunker();
+            byte[] inputData = new byte[] {0xff, 0xac, 0xff, 0xac};
+            CryptoKeyGenerator cryptoKey = new CryptoKeyGenerator(new RandomNumberProvider());
+            PrivateKey privateKey = cryptoKey.GeneratePrivateKey(64);
+            PublicKey publicKey = cryptoKey.GeneratePublicKey(privateKey);
+
+            var chunkedMessage = _chunker.ChunkData(inputData, 3);
+            List<ElGamalCiphertext> encryptedMessage = new List<ElGamalCiphertext>();
+
+            foreach (var bigInteger in chunkedMessage)
+            {
+                var encrypted = _algorithm.Encrypt(bigInteger, publicKey);
+                encryptedMessage.Add(encrypted);
+                
+            }
+
+            List<BigInteger> decryptedMessage = new List<BigInteger>();
+            foreach (var bigInteger2 in encryptedMessage)
+            {
+                var decrypted = _algorithm.Decrypt(bigInteger2, privateKey);
+                decryptedMessage.Add(decrypted);
+            }
+
+            var decryptedBytes = _chunker.MergeData(decryptedMessage.ToArray(), 3);
+            Console.WriteLine();
+            decryptedBytes.Should().BeEquivalentTo(new byte[] {0xff, 0xac, 0xff, 0xac});
         }
     }
 }

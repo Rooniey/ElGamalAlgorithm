@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Gui
+namespace Gui.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -10,7 +10,6 @@ namespace Gui
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
         }
     }
 }

@@ -15,11 +15,14 @@ namespace Gui
 
         private IDataSource _dataSource;
 
+        private IDataChunker _chunker;
+
         public MainViewModel()
         {
             IRandomNumberProvider provider = new RandomNumberProvider();
             _keyGenerator = new CryptoKeyGenerator(provider);
             _algorithm = new ElGamalAlgorithm(provider);
+            _chunker = new DataChunker();
 
             GenerateKeysCommand = new RelayCommand(GenerateKeys);
             EncryptCommand = new RelayCommand(Encrypt);
@@ -50,7 +53,9 @@ namespace Gui
         private void Encrypt()
         {
             _dataSource = new FileDataSource(FilePath);
-            var message = new BigInteger(_dataSource.GetData());
+            var message = _dataSource.GetData();
+            _chunker.ChunkData(message, )
+
             var ciphertext = _algorithm.Encrypt(message, PublicKey);
             if (SaveToFile)
             {
