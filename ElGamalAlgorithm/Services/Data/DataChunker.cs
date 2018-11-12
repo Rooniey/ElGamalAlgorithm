@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ElGamal.Model;
 
 namespace ElGamal.Services.Data
 {
@@ -81,6 +82,19 @@ namespace ElGamal.Services.Data
             }
 
             return RemovePadding(decryptedBytes.ToArray(), blockSize);
+        }
+
+        public byte[] CiphertextsToBytes(List<ElGamalCiphertext> encryptedValues, int blockSize)
+        {
+            List<byte> encryptedBytes = new List<byte>();
+
+            foreach (ElGamalCiphertext encryptedValue in encryptedValues)
+            {
+                encryptedBytes.AddRange(encryptedValue.C1.getBytes());
+                encryptedBytes.AddRange(encryptedValue.C2.getBytes());
+            }
+
+            return encryptedBytes.ToArray();
         }
 
         private byte[] RemovePadding(byte[] message, int blockSize)

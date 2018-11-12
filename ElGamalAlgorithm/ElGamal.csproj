@@ -49,6 +49,8 @@
     <Compile Include="Services\CryptoKeyGenerator.cs" />
     <Compile Include="Services\Data\DataChunker.cs" />
     <Compile Include="Services\Data\FileDataSource.cs" />
+    <Compile Include="Services\Data\FileService.cs" />
+    <Compile Include="Services\Data\IFileService.cs" />
     <Compile Include="Services\Data\TextDataSource.cs" />
     <Compile Include="Services\ICryptoKeyGenerator.cs" />
     <Compile Include="Services\Data\IDataSource.cs" />

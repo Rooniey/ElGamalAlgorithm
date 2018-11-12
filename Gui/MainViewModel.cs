@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.Generic;
+using System.Windows.Input;
 using ElGamal;
 using ElGamal.Model;
 using ElGamal.Services;
@@ -16,6 +17,7 @@ namespace Gui
         private IDataSource _dataSource;
 
         private IDataChunker _chunker;
+        private IFileService _fileService;
 
         public MainViewModel()
         {
@@ -23,6 +25,7 @@ namespace Gui
             _keyGenerator = new CryptoKeyGenerator(provider);
             _algorithm = new ElGamalAlgorithm(provider);
             _chunker = new DataChunker();
+            _fileService = new FileService();
 
             GenerateKeysCommand = new RelayCommand(GenerateKeys);
             EncryptCommand = new RelayCommand(Encrypt);
@@ -54,12 +57,17 @@ namespace Gui
         {
             _dataSource = new FileDataSource(FilePath);
             var message = _dataSource.GetData();
-            _chunker.ChunkData(message, )
+            
+            List<ElGamalCiphertext> encryptedData = new List<ElGamalCiphertext>();
+            foreach (BigInteger chunk in _chunker.ChunkData(message, PrivateKey.P.bitCount() / 8))
+            {
+                var cipher = _algorithm.Encrypt(chunk, PublicKey);
 
-            var ciphertext = _algorithm.Encrypt(message, PublicKey);
+            }
+
             if (SaveToFile)
             {
-                SaveFile(ciphertext);
+                SaveFile(encryptedData);
             }
             else
             {
@@ -68,9 +76,17 @@ namespace Gui
             
         }
 
-        private void SaveFile(ElGamalCiphertext ciphertext)
+        public void Decrypt()
         {
-            
+            _dataSource = new FileDataSource(FilePath);
+            var message 
+
+        }
+
+        private void SaveFile(List<ElGamalCiphertext> ciphertext)
+        {
+            var bytes = _chunker.CiphertextsToBytes(ciphertext, PrivateKey.P.bitCount()/8);
+            _fileService.SaveToFile(bytes, "fajne.txt");
         }
 
     }
