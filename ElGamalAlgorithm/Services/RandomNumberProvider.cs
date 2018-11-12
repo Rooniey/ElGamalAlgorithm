@@ -11,7 +11,7 @@ namespace ElGamal.Services
         {
             //TODO generates at least one bit less number  
             BigInteger randomNumber = new BigInteger();
-            randomNumber.genRandomBits(limit.bitCount() - 1, Random);
+            randomNumber.GenerateRandomBits(limit.BitCount() - 1, Random);
             return randomNumber;
         }
     }

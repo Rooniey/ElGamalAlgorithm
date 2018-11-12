@@ -19,7 +19,9 @@ namespace Gui.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return GetVisibility(value is bool a ? a : false, parameter is bool b ? b : false);
+            bool isVisible = value is bool a ? a : false;
+            bool isInversed = parameter is bool b ? b : false;
+            return GetVisibility(isVisible, isInversed);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

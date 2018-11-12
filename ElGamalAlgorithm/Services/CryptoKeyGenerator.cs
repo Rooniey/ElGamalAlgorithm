@@ -14,7 +14,7 @@ namespace ElGamal.Services
 
         public PrivateKey GeneratePrivateKey(int keyBitCount)
         {
-            BigInteger p = BigInteger.genPseudoPrime(keyBitCount, 20, RandomNumberProvider.Random);
+            BigInteger p = BigInteger.GeneratePseudoPrime(keyBitCount, 20, RandomNumberProvider.Random);
             BigInteger g = FindPrimitiveRoot(p);
             BigInteger x = _randomNumberProvider.GeneratePositiveNumberLessThan(p);
 
@@ -23,7 +23,7 @@ namespace ElGamal.Services
 
         public PublicKey GeneratePublicKey(PrivateKey privateKey)
         {
-            BigInteger y = privateKey.G.modPow(privateKey.X, privateKey.P);
+            BigInteger y = privateKey.G.ModPow(privateKey.X, privateKey.P);
             return new PublicKey() { P = privateKey.P, G = privateKey.G, Y = y};
 
         }
@@ -45,9 +45,9 @@ namespace ElGamal.Services
                 BigInteger g = _randomNumberProvider.GeneratePositiveNumberLessThan(p - 1);
                 // g is a primitive root if for all prime factors of p-1, p[i]
                 // g^((p-1)/p[i]) (mod p) is not congruent to 1
-                if (!(g.modPow((p - 1)/p1, p) == 1))
+                if (!(g.ModPow((p - 1)/p1, p) == 1))
                 {
-                    if (!(g.modPow((p - 1) / p2, p) == 1))
+                    if (!(g.ModPow((p - 1) / p2, p) == 1))
                     {
                         return g;
                     }

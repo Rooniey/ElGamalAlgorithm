@@ -45,7 +45,7 @@
         <!-- LEFT COLUMN CIPHERKEY -->
         <Grid Grid.Row="0"
               Grid.Column="0"
-              Margin="32 0 0 0">
+              Margin="32 0 15 0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -56,9 +56,9 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadlineTextBlock}">Cipherkey</TextBlock>
-
-            <StackPanel Grid.Row="1"
+            <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadlineTextBlock}">Key generation</TextBlock>
+            <TextBlock Grid.Row="1" Margin="0 20 0 -10" FontWeight="Bold">Bit length:</TextBlock>
+            <StackPanel Grid.Row="2"
                         Orientation="Horizontal"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center">
@@ -67,52 +67,15 @@
                     materialDesign:HintAssist.FloatingScale="1.5"
                     materialDesign:HintAssist.FloatingOffset="0, -24"
                     MinWidth="150"
-                    ItemsSource="{Binding KeyLengths}"
-                    SelectedValue="{Binding Cipherkey.CipherkeyLength}">
+                    ItemsSource="{Binding KeySizes}"
+                    SelectedValue="{Binding SelectedKeySize}">
                 </ComboBox>
             </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                    VerticalAlignment="Center"
-                    Grid.Row="2">
-                <ComboBox
-                materialDesign:HintAssist.Hint="Cypherkey encoding"
-                materialDesign:HintAssist.FloatingScale="1.5"
-                materialDesign:HintAssist.FloatingOffset="0, -24"
-                MinWidth="150"
-                ItemsSource="{Binding Encodings}"
-                SelectedValue="{Binding Cipherkey.SelectedEncoding}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        VerticalAlignment="Center"
-                        Grid.Row="3">
-                <materialDesign:PackIcon Kind="Key"
-                                         MinWidth="30"
-                                         MinHeight="30"
-                                         Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                         VerticalAlignment="Center" />
-                <TextBox
-                    x:Name="Cipherkey_Cipherkey"
-                    Margin="10 0 0 0"
-                    MinWidth="250"
-                    MaxWidth="300"
-                    materialDesign:HintAssist.Hint="Cipherkey" />
-                <TextBlock VerticalAlignment="Bottom"
-                           Margin="10 0 0 0">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0}/{1}">
-                            <Binding Path="Cipherkey.CurrentLength" />
-                            <Binding Path="Cipherkey.CipherkeyLength" UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True" />
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                <Button Command="{Binding GenerateKeysCommand}">Generate keys</Button>
             </StackPanel>
         </Grid>
 
@@ -133,7 +96,7 @@
             <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadlineTextBlock}">Choose source of data to encryption:</TextBlock>
 
             <CheckBox
-                x:Name="IsFileEncryption"
+                IsChecked="{Binding IsFileEncryption}"
                 Grid.Row="1"
                 Margin="0 20 0 25"
                 Style="{StaticResource MaterialDesignCheckBox}">
@@ -141,7 +104,7 @@
             </CheckBox>
 
             <Grid Grid.Row="2"
-                  Visibility="{Binding Path=IsFileEncryption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={StaticResource False}}">
+                  Visibility="{Binding Path=IsFileEncryption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={StaticResource True}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -163,7 +126,7 @@
                         materialDesign:HintAssist.FloatingOffset="0, -24"
                         MinWidth="150"
                         ItemsSource="{Binding Encodings}"
-                        SelectedValue="{Binding TextSource.Encoding}">
+                        SelectedValue="{Binding SelectedEncoding}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
@@ -175,28 +138,12 @@
                 <TextBox
                     Grid.Row="1"
                     Grid.Column="0"
+                    Grid.ColumnSpan="3"
                     Margin="0 0 10 0"
-                    x:Name="TextSource_Text"
+                    Text="{Binding TextSource}"
                     Style="{StaticResource InlineTextBox}"
                     materialDesign:HintAssist.Hint="Plaintext to encrypt"
-                    IsEnabled="{Binding Path=IsFileEncryption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={StaticResource False}}" />
-
-                <TextBox
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    x:Name="EncryptedString"
-                    Margin="0 0 10 0"
-                    Style="{StaticResource InlineTextBox}"
-                    materialDesign:HintAssist.Hint="Encrypted text"
-                    IsEnabled="false" />
-
-                <TextBox
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    x:Name="DecryptedString"
-                    Style="{StaticResource InlineTextBox}"
-                    materialDesign:HintAssist.Hint="Decrypted text"
-                    IsEnabled="false" />
+                    IsEnabled="{Binding Path=IsFileEncryption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={StaticResource True}}" />
             </Grid>
 
             <StackPanel Orientation="Horizontal"
@@ -215,7 +162,7 @@
                         MaxWidth="300"
                         materialDesign:HintAssist.Hint="Filepath" />
                 <Button
-                        x:Name="ChooseFile"
+                        Command="{Binding SelectFileCommand}"
                         Style="{StaticResource MaterialDesignRaisedButton}"
                         MinWidth="200">Explore files</Button>
             </StackPanel>
@@ -233,7 +180,7 @@
                 Style="{StaticResource MaterialDesignRaisedDarkButton}"
                 Width="200">Encrypt</Button>
             <Button
-                x:Name="Decrypt"
+                Command="{Binding DecryptCommand}"
                 Margin="0 30 0 32"
                 HorizontalAlignment="Right"
                 Style="{StaticResource MaterialDesignRaisedDarkButton}"
