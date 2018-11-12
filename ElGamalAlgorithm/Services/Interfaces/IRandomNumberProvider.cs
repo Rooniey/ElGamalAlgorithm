@@ -1,4 +1,4 @@
-﻿namespace ElGamal.Services
+﻿namespace ElGamal.Services.Interfaces
 {
     public interface IRandomNumberProvider
     {

@@ -5,10 +5,10 @@ namespace ElGamal.Services.Data
 {
     public interface IDataChunker
     {
-        BigInteger[] ChunkData(byte[] inputData, int blockSize);
-        BigInteger[] BytesToBigIntegers(byte[] encryptedValues, int blockSize);
+        BigInteger[] ChunkData(byte[] inputData, int bytesInBlock);
         byte[] MergeData(BigInteger[] encryptedValues, int blockSize);
-
-        byte[] CiphertextsToBytes(List<ElGamalCiphertext> encryptedValues, int blockSize);
+        BigInteger[] BytesToBigIntegers(byte[] encryptedValues, int blockSize);
+        byte[] CiphertextsToBytes(ElGamalCiphertext[] encryptedValues, int blockSize);
+        ElGamalCiphertext[] BytesToCipherText(byte[] data, int bytesInBlock);
     }
 }

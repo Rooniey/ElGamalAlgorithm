@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace ElGamal.Services.Data
+namespace ElGamal.Services.Data.Sources
 {
     public class FileDataSource : IDataSource
     {

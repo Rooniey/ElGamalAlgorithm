@@ -209,7 +209,7 @@
                                              Foreground="{DynamicResource PrimaryHueMidBrush}"
                                              VerticalAlignment="Center" />
                 <TextBox
-                        x:Name="FileDataSource_FilePath"
+                        Text ="{Binding FilePath}"
                         Margin="10 0 20 0"
                         MinWidth="250"
                         MaxWidth="300"
@@ -227,7 +227,7 @@
             Orientation="Horizontal"
             HorizontalAlignment="Right">
             <Button
-                x:Name="Encrypt"
+                Command="{Binding EncryptCommand}"
                 Margin="0 30 20 32"
                 HorizontalAlignment="Right"
                 Style="{StaticResource MaterialDesignRaisedDarkButton}"

@@ -4,6 +4,7 @@ using ElGamal;
 using ElGamal.Model;
 using ElGamal.Services;
 using ElGamal.Services.Data;
+using ElGamal.Services.Data.Padding;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -55,7 +56,7 @@ namespace ElGamalTests
         [TestMethod]
         public void When_EncryptCalledWithPaddedValues_Should_ReturnPaddedData()
         {
-            DataChunker _chunker = new DataChunker();
+            DataChunker _chunker = new DataChunker(new SimplePaddingStrategy());
             byte[] inputData = new byte[] {0xff, 0xac, 0xff, 0xac};
             CryptoKeyGenerator cryptoKey = new CryptoKeyGenerator(new RandomNumberProvider());
             PrivateKey privateKey = cryptoKey.GeneratePrivateKey(64);

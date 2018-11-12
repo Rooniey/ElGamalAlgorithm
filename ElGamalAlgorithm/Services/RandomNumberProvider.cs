@@ -1,4 +1,5 @@
 ﻿using System;
+using ElGamal.Services.Interfaces;
 
 namespace ElGamal.Services
 {

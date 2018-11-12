@@ -1,4 +1,4 @@
-﻿namespace ElGamal.Services.Data
+﻿namespace ElGamal.Services.Data.Sources
 {
     public interface IDataSource
     {

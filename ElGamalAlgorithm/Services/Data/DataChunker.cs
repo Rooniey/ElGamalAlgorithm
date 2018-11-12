@@ -1,23 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ElGamal.Model;
+using ElGamal.Services.Data.Padding;
+using ElGamal.Services.Data.Sources;
 
 namespace ElGamal.Services.Data
 {
     public class DataChunker : IDataChunker
     {
-        public BigInteger[] ChunkData(byte[] inputData, int blockSize)
-        {
-            var paddedData = AddPadding(inputData, blockSize);
-            BigInteger[] blocks = new BigInteger[paddedData.Length / blockSize];
+        private readonly IPaddingStrategy _paddingStrategy;
+        private readonly IPaddingStrategy _PaddingStrategyForFullfilment;
 
-            for (int i = 0; i < paddedData.Length / blockSize; i++)
+        public DataChunker(IPaddingStrategy paddingStrategy)
+        {
+            _paddingStrategy = paddingStrategy ?? throw new ArgumentNullException(nameof(paddingStrategy));
+            _PaddingStrategyForFullfilment = new PaddingWithZeroesStrategy();
+        }
+
+        public BigInteger[] ChunkData(byte[] inputData, int bytesInBlock)
+        {
+            var paddedData = _paddingStrategy.ApplyPadding(inputData, bytesInBlock);
+            int numberOfBlocks = paddedData.Length / bytesInBlock;
+            BigInteger[] blocks = new BigInteger[numberOfBlocks];
+
+            for (int i = 0; i < numberOfBlocks; i++)
             {
-                byte[] block = new byte[blockSize];
-                Array.Copy(paddedData, i * blockSize, block, 0, blockSize);
+                byte[] block = new byte[bytesInBlock];
+                Array.Copy(paddedData, i * bytesInBlock, block, 0, bytesInBlock);
                 blocks[i] = new BigInteger(block);
             }
 
@@ -38,39 +47,6 @@ namespace ElGamal.Services.Data
             return blocks;
         }
 
-        private byte[] AddPadding(byte[] message, int blockSize)
-        {
-            if (blockSize > 255)
-            {
-                throw new ArgumentException($"Block length has to be shorter than 255, but was {blockSize}");
-            }
-
-            if (message.Length % blockSize == 0)
-            {
-                byte[] paddedMessage = new byte[message.Length + blockSize];
-                message.CopyTo(paddedMessage, 0);
-                for (int i = message.Length; i < message.Length + blockSize; i++)
-                {
-                    paddedMessage[i] = (byte)blockSize;
-                }
-                return paddedMessage;
-            }
-            else
-            {
-                int remainderBytes = blockSize - (message.Length % blockSize);
-                byte[] paddedMessage = new byte[message.Length + remainderBytes];
-
-                message.CopyTo(paddedMessage, 0); //copy message content
-
-                for (int i = message.Length; i < message.Length + remainderBytes; i++)
-                {
-                    paddedMessage[i] = (byte)remainderBytes;
-                }
-
-                return paddedMessage;
-            }
-        }
-
         public byte[] MergeData(BigInteger[] decryptedValues, int blockSize)
         {
             List<byte> decryptedBytes = new List<byte>();
@@ -81,38 +57,39 @@ namespace ElGamal.Services.Data
                 decryptedBytes.AddRange(valueBytes);
             }
 
-            return RemovePadding(decryptedBytes.ToArray(), blockSize);
+            return _paddingStrategy.RemovePadding(decryptedBytes.ToArray());
         }
 
-        public byte[] CiphertextsToBytes(List<ElGamalCiphertext> encryptedValues, int blockSize)
+        public byte[] CiphertextsToBytes(ElGamalCiphertext[] encryptedValues, int bytesInBlock)
         {
-            List<byte> encryptedBytes = new List<byte>();
+            byte[] encryptedByteArray = new byte[(2 * encryptedValues.Length) * bytesInBlock];
 
-            foreach (ElGamalCiphertext encryptedValue in encryptedValues)
+            for (int i = 0; i < encryptedValues.Length; i++)
             {
-                encryptedBytes.AddRange(encryptedValue.C1.getBytes());
-                encryptedBytes.AddRange(encryptedValue.C2.getBytes());
+                byte[] paddedNumberC1 = _PaddingStrategyForFullfilment.ApplyPadding(encryptedValues[i].C1.getBytes(), bytesInBlock);
+                byte[] paddedNumberC2 = _PaddingStrategyForFullfilment.ApplyPadding(encryptedValues[i].C2.getBytes(), bytesInBlock);
+                paddedNumberC1.CopyTo(encryptedByteArray, (2*i) * bytesInBlock);
+                paddedNumberC2.CopyTo(encryptedByteArray, (2*i+1) * bytesInBlock);
             }
 
-            return encryptedBytes.ToArray();
+            return encryptedByteArray;
         }
 
-        private byte[] RemovePadding(byte[] message, int blockSize)
+        public ElGamalCiphertext[] BytesToCipherText(byte[] data, int bytesInBlock)
         {
-            //find last byte
-            byte lastByte = message.Last();
+            ElGamalCiphertext[] encryptedByteArray = new ElGamalCiphertext[ (data.Length/bytesInBlock)/2 ];
 
-            if (lastByte > message.Length)
+            for (int i = 0; i < data.Length; i+=2*bytesInBlock)
             {
-                throw new ArgumentException("Message is shorter than padding length taken from last byte.");
+                byte[] tmp = new byte[bytesInBlock];
+                Array.Copy(data, i, tmp, 0, bytesInBlock);
+                BigInteger paddedNumberC1 = new BigInteger(tmp);
+                Array.Copy(data, i + bytesInBlock, tmp, 0, bytesInBlock);
+                BigInteger paddedNumberC2 = new BigInteger(tmp);
+                encryptedByteArray[i/(2*bytesInBlock)] = new ElGamalCiphertext() {C1 = paddedNumberC1, C2 = paddedNumberC2};   
             }
 
-            //remove correct number of bytes (just dont copy them)
-            byte[] messageWithoutPadding = new byte[message.Length - lastByte];
-
-            Array.Copy(message, 0, messageWithoutPadding, 0, messageWithoutPadding.Length);
-
-            return messageWithoutPadding;
+            return encryptedByteArray;
         }
     }
 }

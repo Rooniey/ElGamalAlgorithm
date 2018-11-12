@@ -1,6 +1,6 @@
 ﻿using ElGamal.Model;
 
-namespace ElGamal.Services
+namespace ElGamal.Services.Interfaces
 {
     public interface ICryptoKeyGenerator
     {

@@ -1,5 +1,6 @@
 ﻿using ElGamal;
 using ElGamal.Services;
+using ElGamal.Services.Interfaces;
 
 namespace ElGamalTests
 {

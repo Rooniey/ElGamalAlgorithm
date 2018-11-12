@@ -1,6 +1,5 @@
-﻿using System;
-using System.Security.Cryptography;
-using ElGamal.Model;
+﻿using ElGamal.Model;
+using ElGamal.Services.Interfaces;
 
 namespace ElGamal.Services
 {

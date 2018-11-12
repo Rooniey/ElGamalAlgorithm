@@ -1,7 +1,7 @@
 ﻿using System;
 using ElGamal.Helpers;
 
-namespace ElGamal.Services.Data
+namespace ElGamal.Services.Data.Sources
 {
     public class TextDataSource : IDataSource
     {

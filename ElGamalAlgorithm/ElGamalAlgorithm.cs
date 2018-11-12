@@ -1,5 +1,6 @@
 ﻿using ElGamal.Model;
 using ElGamal.Services;
+using ElGamal.Services.Interfaces;
 
 namespace ElGamal
 {
