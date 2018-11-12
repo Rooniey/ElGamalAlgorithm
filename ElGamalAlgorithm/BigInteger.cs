@@ -6,8 +6,7 @@ namespace ElGamal
     {
         // maximum length of the BigInteger in uint (4 bytes)
         // change this to suit the required level of precision.
-
-        private const int maxLength = 256;
+        public const int MaxLength = 256;
 
         // primes smaller than 2000 to test the generated prime number
 
@@ -41,31 +40,22 @@ namespace ElGamal
         public int DataLength { get; set; } // number of actual chars used
 
 
-        //***********************************************************************
-        // Constructor (Default value for BigInteger is 0
-        //***********************************************************************
-
         public BigInteger()
         {
-            _data = new uint[maxLength];
+            _data = new uint[MaxLength];
             DataLength = 1;
         }
 
-
-        //***********************************************************************
-        // Constructor (Default value provided by long)
-        //***********************************************************************
-
         public BigInteger(long value)
         {
-            _data = new uint[maxLength];
+            _data = new uint[MaxLength];
             long tempVal = value;
 
             // copy bytes from long to BigInteger without any assumption of
             // the length of the long datatype
 
             DataLength = 0;
-            while (value != 0 && DataLength < maxLength)
+            while (value != 0 && DataLength < MaxLength)
             {
                 _data[DataLength] = (uint) (value & 0xFFFFFFFF);
                 value >>= 32;
@@ -74,7 +64,7 @@ namespace ElGamal
 
             if (tempVal > 0) // overflow check for +ve value
             {
-                if (value != 0 || (_data[maxLength - 1] & 0x80000000) != 0)
+                if (value != 0 || (_data[MaxLength - 1] & 0x80000000) != 0)
                     throw (new ArithmeticException("Positive overflow in constructor."));
             }
             else if (tempVal < 0) // underflow check for -ve value
@@ -94,59 +84,38 @@ namespace ElGamal
 
         public BigInteger(ulong value)
         {
-            _data = new uint[maxLength];
+            _data = new uint[MaxLength];
 
             // copy bytes from ulong to BigInteger without any assumption of
             // the length of the ulong datatype
 
             DataLength = 0;
-            while (value != 0 && DataLength < maxLength)
+            while (value != 0 && DataLength < MaxLength)
             {
                 _data[DataLength] = (uint) (value & 0xFFFFFFFF);
                 value >>= 32;
                 DataLength++;
             }
 
-            if (value != 0 || (_data[maxLength - 1] & 0x80000000) != 0)
+            if (value != 0 || (_data[MaxLength - 1] & 0x80000000) != 0)
                 throw (new ArithmeticException("Positive overflow in constructor."));
 
             if (DataLength == 0)
                 DataLength = 1;
         }
 
-
-        //***********************************************************************
-        // Constructor (Default value provided by BigInteger)
-        //***********************************************************************
-
         public BigInteger(BigInteger bi)
         {
-            _data = new uint[maxLength];
+            _data = new uint[MaxLength];
 
             DataLength = bi.DataLength;
 
-            for (int i = 0; i < DataLength; i++)
-                _data[i] = bi._data[i];
+            bi._data.CopyTo(_data, 0);
         }
 
-
-        //***********************************************************************
-        // Constructor (Default value provided by an array of bytes)
-        //
         // The lowest index of the input byte array (i.e [0]) should contain the
         // most significant byte of the number, and the highest index should
         // contain the least significant byte.
-        //
-        // E.g.
-        // To initialize "a" with the default value of 0x1D4F in base 16
-        //      byte[] temp = { 0x1D, 0x4F };
-        //      BigInteger a = new BigInteger(temp)
-        //
-        // Note that this method of initialization does not allow the
-        // sign to be specified.
-        //
-        //***********************************************************************
-
         public BigInteger(byte[] inData)
         {
             DataLength = inData.Length >> 2;
@@ -156,10 +125,10 @@ namespace ElGamal
                 DataLength++;
 
 
-            if (DataLength > maxLength)
+            if (DataLength > MaxLength)
                 throw (new ArithmeticException("Byte overflow in constructor."));
 
-            _data = new uint[maxLength];
+            _data = new uint[MaxLength];
 
             for (int i = inData.Length - 1, j = 0; i >= 3; i -= 4, j++)
             {
@@ -177,53 +146,7 @@ namespace ElGamal
 
             while (DataLength > 1 && _data[DataLength - 1] == 0)
                 DataLength--;
-
-            //Console.WriteLine("Len = " + DataLength);
         }
-
-
-        //***********************************************************************
-        // Constructor (Default value provided by an array of bytes of the
-        // specified length.)
-        //***********************************************************************
-
-        public BigInteger(byte[] inData, int inLen)
-        {
-            DataLength = inLen >> 2;
-
-            int leftOver = inLen & 0x3;
-            if (leftOver != 0) // length not multiples of 4
-                DataLength++;
-
-            if (DataLength > maxLength || inLen > inData.Length)
-                throw (new ArithmeticException("Byte overflow in constructor."));
-
-
-            _data = new uint[maxLength];
-
-            for (int i = inLen - 1, j = 0; i >= 3; i -= 4, j++)
-            {
-                _data[j] = (uint) ((inData[i - 3] << 24) + (inData[i - 2] << 16) +
-                                  (inData[i - 1] << 8) + inData[i]);
-            }
-
-            if (leftOver == 1)
-                _data[DataLength - 1] = (uint) inData[0];
-            else if (leftOver == 2)
-                _data[DataLength - 1] = (uint) ((inData[0] << 8) + inData[1]);
-            else if (leftOver == 3)
-                _data[DataLength - 1] = (uint) ((inData[0] << 16) + (inData[1] << 8) + inData[2]);
-
-
-            if (DataLength == 0)
-                DataLength = 1;
-
-            while (DataLength > 1 && _data[DataLength - 1] == 0)
-                DataLength--;
-
-            //Console.WriteLine("Len = " + DataLength);
-        }
-
 
         //***********************************************************************
         // Constructor (Default value provided by an array of unsigned integers)
@@ -233,18 +156,16 @@ namespace ElGamal
         {
             DataLength = inData.Length;
 
-            if (DataLength > maxLength)
+            if (DataLength > MaxLength)
                 throw (new ArithmeticException("Byte overflow in constructor."));
 
-            _data = new uint[maxLength];
+            _data = new uint[MaxLength];
 
             for (int i = DataLength - 1, j = 0; i >= 0; i--, j++)
                 _data[j] = inData[i];
 
             while (DataLength > 1 && _data[DataLength - 1] == 0)
                 DataLength--;
-
-            //Console.WriteLine("Len = " + DataLength);
         }
 
 
@@ -292,7 +213,7 @@ namespace ElGamal
                 result._data[i] = (uint) (sum & 0xFFFFFFFF);
             }
 
-            if (carry != 0 && result.DataLength < maxLength)
+            if (carry != 0 && result.DataLength < MaxLength)
             {
                 result._data[result.DataLength] = (uint) (carry);
                 result.DataLength++;
@@ -303,7 +224,7 @@ namespace ElGamal
 
 
             // overflow check
-            int lastPos = maxLength - 1;
+            int lastPos = MaxLength - 1;
             if ((bi1._data[lastPos] & 0x80000000) == (bi2._data[lastPos] & 0x80000000) &&
                 (result._data[lastPos] & 0x80000000) != (bi1._data[lastPos] & 0x80000000))
             {
@@ -313,16 +234,13 @@ namespace ElGamal
             return result;
         }
 
-
-        //***********************************************************************
-        // Overloading of subtraction operator
-        //***********************************************************************
-
         public static BigInteger operator -(BigInteger bi1, BigInteger bi2)
         {
-            BigInteger result = new BigInteger();
+            BigInteger result = new BigInteger
+            {
+                DataLength = (bi1.DataLength > bi2.DataLength) ? bi1.DataLength : bi2.DataLength
+            };
 
-            result.DataLength = (bi1.DataLength > bi2.DataLength) ? bi1.DataLength : bi2.DataLength;
 
             long carryIn = 0;
             for (int i = 0; i < result.DataLength; i++)
@@ -341,9 +259,9 @@ namespace ElGamal
             // roll over to negative
             if (carryIn != 0)
             {
-                for (int i = result.DataLength; i < maxLength; i++)
+                for (int i = result.DataLength; i < MaxLength; i++)
                     result._data[i] = 0xFFFFFFFF;
-                result.DataLength = maxLength;
+                result.DataLength = MaxLength;
             }
 
             // fixed in v1.03 to give correct datalength for a - (-b)
@@ -352,7 +270,7 @@ namespace ElGamal
 
             // overflow check
 
-            int lastPos = maxLength - 1;
+            int lastPos = MaxLength - 1;
             if ((bi1._data[lastPos] & 0x80000000) != (bi2._data[lastPos] & 0x80000000) &&
                 (result._data[lastPos] & 0x80000000) != (bi1._data[lastPos] & 0x80000000))
             {
@@ -369,7 +287,7 @@ namespace ElGamal
 
         public static BigInteger operator *(BigInteger bi1, BigInteger bi2)
         {
-            int lastPos = maxLength - 1;
+            int lastPos = MaxLength - 1;
             bool bi1Neg = false, bi2Neg = false;
 
             // take the absolute value of the inputs
@@ -422,8 +340,8 @@ namespace ElGamal
 
 
             result.DataLength = bi1.DataLength + bi2.DataLength;
-            if (result.DataLength > maxLength)
-                result.DataLength = maxLength;
+            if (result.DataLength > MaxLength)
+                result.DataLength = MaxLength;
 
             while (result.DataLength > 1 && result._data[result.DataLength - 1] == 0)
                 result.DataLength--;
@@ -529,9 +447,9 @@ namespace ElGamal
             result.DataLength = shiftRight(result._data, shiftVal);
 
 
-            if ((bi1._data[maxLength - 1] & 0x80000000) != 0) // negative
+            if ((bi1._data[MaxLength - 1] & 0x80000000) != 0) // negative
             {
-                for (int i = maxLength - 1; i >= result.DataLength; i--)
+                for (int i = MaxLength - 1; i >= result.DataLength; i--)
                     result._data[i] = 0xFFFFFFFF;
 
                 uint mask = 0x80000000;
@@ -544,7 +462,7 @@ namespace ElGamal
                     mask >>= 1;
                 }
 
-                result.DataLength = maxLength;
+                result.DataLength = MaxLength;
             }
 
             return result;
@@ -591,27 +509,6 @@ namespace ElGamal
             return bufLen;
         }
 
-
-        //***********************************************************************
-        // Overloading of the NOT operator (1's complement)
-        //***********************************************************************
-
-        public static BigInteger operator ~(BigInteger bi1)
-        {
-            BigInteger result = new BigInteger(bi1);
-
-            for (int i = 0; i < maxLength; i++)
-                result._data[i] = (uint) (~(bi1._data[i]));
-
-            result.DataLength = maxLength;
-
-            while (result.DataLength > 1 && result._data[result.DataLength - 1] == 0)
-                result.DataLength--;
-
-            return result;
-        }
-
-
         //***********************************************************************
         // Overloading of the NEGATE operator (2's complement)
         //***********************************************************************
@@ -627,14 +524,14 @@ namespace ElGamal
             BigInteger result = new BigInteger(bi1);
 
             // 1's complement
-            for (int i = 0; i < maxLength; i++)
+            for (int i = 0; i < MaxLength; i++)
                 result._data[i] = (uint) (~(bi1._data[i]));
 
             // add one to result of 1's complement
             long val, carry = 1;
             int index = 0;
 
-            while (carry != 0 && index < maxLength)
+            while (carry != 0 && index < MaxLength)
             {
                 val = (long) (result._data[index]);
                 val++;
@@ -645,10 +542,10 @@ namespace ElGamal
                 index++;
             }
 
-            if ((bi1._data[maxLength - 1] & 0x80000000) == (result._data[maxLength - 1] & 0x80000000))
+            if ((bi1._data[MaxLength - 1] & 0x80000000) == (result._data[MaxLength - 1] & 0x80000000))
                 throw (new ArithmeticException("Overflow in negation.\n"));
 
-            result.DataLength = maxLength;
+            result.DataLength = MaxLength;
 
             while (result.DataLength > 1 && result._data[result.DataLength - 1] == 0)
                 result.DataLength--;
@@ -701,7 +598,7 @@ namespace ElGamal
 
         public static bool operator >(BigInteger bi1, BigInteger bi2)
         {
-            int pos = maxLength - 1;
+            int pos = MaxLength - 1;
 
             // bi1 is negative, bi2 is positive
             if ((bi1._data[pos] & 0x80000000) != 0 && (bi2._data[pos] & 0x80000000) == 0)
@@ -728,7 +625,7 @@ namespace ElGamal
 
         public static bool operator <(BigInteger bi1, BigInteger bi2)
         {
-            int pos = maxLength - 1;
+            int pos = MaxLength - 1;
 
             // bi1 is negative, bi2 is positive
             if ((bi1._data[pos] & 0x80000000) != 0 && (bi2._data[pos] & 0x80000000) == 0)
@@ -775,7 +672,7 @@ namespace ElGamal
         private static void multiByteDivide(BigInteger bi1, BigInteger bi2,
             BigInteger outQuotient, BigInteger outRemainder)
         {
-            uint[] result = new uint[maxLength];
+            uint[] result = new uint[MaxLength];
 
             int remainderLen = bi1.DataLength + 1;
             uint[] remainder = new uint[remainderLen];
@@ -857,19 +754,10 @@ namespace ElGamal
 
                 BigInteger yy = kk - ss;
 
-                //Console.WriteLine("ss = " + ss);
-                //Console.WriteLine("kk = " + kk);
-                //Console.WriteLine("yy = " + yy);
 
                 for (int h = 0; h < divisorLen; h++)
                     remainder[pos - h] = yy._data[bi2.DataLength - h];
 
-                /*
-                Console.WriteLine("dividend = ");
-                for(int q = remainderLen - 1; q >= 0; q--)
-                        Console.Write("{0:x2}", remainder[q]);
-                Console.WriteLine("\n************ q_hat = {0:X}\n", q_hat);
-                */
 
                 result[resultPos++] = (uint) q_hat;
 
@@ -881,7 +769,7 @@ namespace ElGamal
             int y = 0;
             for (int x = outQuotient.DataLength - 1; x >= 0; x--, y++)
                 outQuotient._data[y] = result[x];
-            for (; y < maxLength; y++)
+            for (; y < MaxLength; y++)
                 outQuotient._data[y] = 0;
 
             while (outQuotient.DataLength > 1 && outQuotient._data[outQuotient.DataLength - 1] == 0)
@@ -894,7 +782,7 @@ namespace ElGamal
 
             for (y = 0; y < outRemainder.DataLength; y++)
                 outRemainder._data[y] = remainder[y];
-            for (; y < maxLength; y++)
+            for (; y < MaxLength; y++)
                 outRemainder._data[y] = 0;
         }
 
@@ -907,11 +795,11 @@ namespace ElGamal
         private static void singleByteDivide(BigInteger bi1, BigInteger bi2,
             BigInteger outQuotient, BigInteger outRemainder)
         {
-            uint[] result = new uint[maxLength];
+            uint[] result = new uint[MaxLength];
             int resultPos = 0;
 
             // copy dividend to reminder
-            for (int i = 0; i < maxLength; i++)
+            for (int i = 0; i < MaxLength; i++)
                 outRemainder._data[i] = bi1._data[i];
             outRemainder.DataLength = bi1.DataLength;
 
@@ -921,9 +809,6 @@ namespace ElGamal
             ulong divisor = (ulong) bi2._data[0];
             int pos = outRemainder.DataLength - 1;
             ulong dividend = (ulong) outRemainder._data[pos];
-
-            //Console.WriteLine("divisor = " + divisor + " dividend = " + dividend);
-            //Console.WriteLine("divisor = " + bi2 + "\ndividend = " + bi1);
 
             if (dividend >= divisor)
             {
@@ -937,7 +822,6 @@ namespace ElGamal
 
             while (pos >= 0)
             {
-                //Console.WriteLine(pos);
 
                 dividend = ((ulong) outRemainder._data[pos + 1] << 32) + (ulong) outRemainder._data[pos];
                 ulong quotient = dividend / divisor;
@@ -945,14 +829,13 @@ namespace ElGamal
 
                 outRemainder._data[pos + 1] = 0;
                 outRemainder._data[pos--] = (uint) (dividend % divisor);
-                //Console.WriteLine(">>>> " + bi1);
             }
 
             outQuotient.DataLength = resultPos;
             int j = 0;
             for (int i = outQuotient.DataLength - 1; i >= 0; i--, j++)
                 outQuotient._data[j] = result[i];
-            for (; j < maxLength; j++)
+            for (; j < MaxLength; j++)
                 outQuotient._data[j] = 0;
 
             while (outQuotient.DataLength > 1 && outQuotient._data[outQuotient.DataLength - 1] == 0)
@@ -975,7 +858,7 @@ namespace ElGamal
             BigInteger quotient = new BigInteger();
             BigInteger remainder = new BigInteger();
 
-            int lastPos = maxLength - 1;
+            int lastPos = MaxLength - 1;
             bool divisorNeg = false, dividendNeg = false;
 
             if ((bi1._data[lastPos] & 0x80000000) != 0) // bi1 negative
@@ -1019,7 +902,7 @@ namespace ElGamal
             BigInteger quotient = new BigInteger();
             BigInteger remainder = new BigInteger(bi1);
 
-            int lastPos = maxLength - 1;
+            int lastPos = MaxLength - 1;
             bool dividendNeg = false;
 
             if ((bi1._data[lastPos] & 0x80000000) != 0) // bi1 negative
@@ -1048,81 +931,6 @@ namespace ElGamal
 
                 return remainder;
             }
-        }
-
-
-        //***********************************************************************
-        // Overloading of bitwise AND operator
-        //***********************************************************************
-
-        public static BigInteger operator &(BigInteger bi1, BigInteger bi2)
-        {
-            BigInteger result = new BigInteger();
-
-            int len = (bi1.DataLength > bi2.DataLength) ? bi1.DataLength : bi2.DataLength;
-
-            for (int i = 0; i < len; i++)
-            {
-                uint sum = (uint) (bi1._data[i] & bi2._data[i]);
-                result._data[i] = sum;
-            }
-
-            result.DataLength = maxLength;
-
-            while (result.DataLength > 1 && result._data[result.DataLength - 1] == 0)
-                result.DataLength--;
-
-            return result;
-        }
-
-
-        //***********************************************************************
-        // Overloading of bitwise OR operator
-        //***********************************************************************
-
-        public static BigInteger operator |(BigInteger bi1, BigInteger bi2)
-        {
-            BigInteger result = new BigInteger();
-
-            int len = (bi1.DataLength > bi2.DataLength) ? bi1.DataLength : bi2.DataLength;
-
-            for (int i = 0; i < len; i++)
-            {
-                uint sum = (uint) (bi1._data[i] | bi2._data[i]);
-                result._data[i] = sum;
-            }
-
-            result.DataLength = maxLength;
-
-            while (result.DataLength > 1 && result._data[result.DataLength - 1] == 0)
-                result.DataLength--;
-
-            return result;
-        }
-
-
-        //***********************************************************************
-        // Overloading of bitwise XOR operator
-        //***********************************************************************
-
-        public static BigInteger operator ^(BigInteger bi1, BigInteger bi2)
-        {
-            BigInteger result = new BigInteger();
-
-            int len = (bi1.DataLength > bi2.DataLength) ? bi1.DataLength : bi2.DataLength;
-
-            for (int i = 0; i < len; i++)
-            {
-                uint sum = (uint) (bi1._data[i] ^ bi2._data[i]);
-                result._data[i] = sum;
-            }
-
-            result.DataLength = maxLength;
-
-            while (result.DataLength > 1 && result._data[result.DataLength - 1] == 0)
-                result.DataLength--;
-
-            return result;
         }
 
         //***********************************************************************
@@ -1157,7 +965,7 @@ namespace ElGamal
             BigInteger a = this;
 
             bool negative = false;
-            if ((a._data[maxLength - 1] & 0x80000000) != 0)
+            if ((a._data[MaxLength - 1] & 0x80000000) != 0)
             {
                 negative = true;
                 try
@@ -1203,14 +1011,14 @@ namespace ElGamal
 
         public BigInteger ModPow(BigInteger exp, BigInteger n)
         {
-            if ((exp._data[maxLength - 1] & 0x80000000) != 0)
+            if ((exp._data[MaxLength - 1] & 0x80000000) != 0)
                 throw (new ArithmeticException("Positive exponents only."));
 
             BigInteger resultNum = 1;
             BigInteger tempNum;
             bool thisNegative = false;
 
-            if ((this._data[maxLength - 1] & 0x80000000) != 0) // negative this
+            if ((this._data[MaxLength - 1] & 0x80000000) != 0) // negative this
             {
                 tempNum = -this % n;
                 thisNegative = true;
@@ -1218,7 +1026,7 @@ namespace ElGamal
             else
                 tempNum = this % n; // ensures (tempNum * tempNum) < b^(2k)
 
-            if ((n._data[maxLength - 1] & 0x80000000) != 0) // negative n
+            if ((n._data[MaxLength - 1] & 0x80000000) != 0) // negative n
                 n = -n;
 
             // calculate constant = b^(2k) / m
@@ -1341,7 +1149,7 @@ namespace ElGamal
                 r2.DataLength--;
 
             r1 -= r2;
-            if ((r1._data[maxLength - 1] & 0x80000000) != 0) // negative
+            if ((r1._data[MaxLength - 1] & 0x80000000) != 0) // negative
             {
                 BigInteger val = new BigInteger();
                 val._data[kPlusOne] = 0x00000001;
@@ -1357,20 +1165,20 @@ namespace ElGamal
 
 
         //***********************************************************************
-        // Returns gcd(this, bi)
+        // Returns Gcd(this, bi)
         //***********************************************************************
 
-        public BigInteger gcd(BigInteger bi)
+        public BigInteger Gcd(BigInteger bi)
         {
             BigInteger x;
             BigInteger y;
 
-            if ((_data[maxLength - 1] & 0x80000000) != 0) // negative
+            if ((_data[MaxLength - 1] & 0x80000000) != 0) // negative
                 x = -this;
             else
                 x = this;
 
-            if ((bi._data[maxLength - 1] & 0x80000000) != 0) // negative
+            if ((bi._data[MaxLength - 1] & 0x80000000) != 0) // negative
                 y = -bi;
             else
                 y = bi;
@@ -1400,13 +1208,13 @@ namespace ElGamal
             if (remBits != 0)
                 dwords++;
 
-            if (dwords > maxLength)
-                throw (new ArithmeticException("Number of required bits > maxLength."));
+            if (dwords > MaxLength)
+                throw (new ArithmeticException("Number of required bits > MaxLength."));
 
             for (int i = 0; i < dwords; i++)
                 _data[i] = (uint) (rand.NextDouble() * 0x100000000);
 
-            for (int i = dwords; i < maxLength; i++)
+            for (int i = dwords; i < MaxLength; i++)
                 _data[i] = 0;
 
             if (remBits != 0)
@@ -1482,7 +1290,7 @@ namespace ElGamal
         public bool RabinMillerTest(int confidence)
         {
             BigInteger thisVal;
-            if ((this._data[maxLength - 1] & 0x80000000) != 0) // negative
+            if ((this._data[MaxLength - 1] & 0x80000000) != 0) // negative
                 thisVal = -this;
             else
                 thisVal = this;
@@ -1549,7 +1357,7 @@ namespace ElGamal
                 }
 
                 // check whether a factor exists (fix for version 1.03)
-                BigInteger gcdTest = a.gcd(thisVal);
+                BigInteger gcdTest = a.Gcd(thisVal);
                 if (gcdTest.DataLength == 1 && gcdTest._data[0] != 1)
                     return false;
 
@@ -1590,7 +1398,7 @@ namespace ElGamal
         public bool IsProbablePrime(int confidence)
         {
             BigInteger thisVal;
-            if ((this._data[maxLength - 1] & 0x80000000) != 0) // negative
+            if ((this._data[MaxLength - 1] & 0x80000000) != 0) // negative
                 thisVal = -this;
             else
                 thisVal = this;
@@ -1654,32 +1462,6 @@ namespace ElGamal
 
             return result;
         }
-
-
-        //***********************************************************************
-        // Generates a random number with the specified number of bits such
-        // that gcd(number, this) = 1
-        //***********************************************************************
-
-        public BigInteger genCoPrime(int bits, Random rand)
-        {
-            bool done = false;
-            BigInteger result = new BigInteger();
-
-            while (!done)
-            {
-                result.GenerateRandomBits(bits, rand);
-                //Console.WriteLine(result.ToString(16));
-
-                // gcd test
-                BigInteger g = result.gcd(this);
-                if (g.DataLength == 1 && g._data[0] == 1)
-                    done = true;
-            }
-
-            return result;
-        }
-
 
         //***********************************************************************
         // Returns the value of the BigInteger as a byte array.  The lowest

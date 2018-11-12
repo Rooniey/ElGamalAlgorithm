@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ElGamal;
+﻿using ElGamal;
 using ElGamal.Model;
 using ElGamal.Services.Data;
 using ElGamal.Services.Data.Padding;
@@ -68,17 +67,18 @@ namespace ElGamalTests
             result.Should().BeEquivalentTo(new byte[] {0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0xAC, 0xFF, 0xFF, 0xDF, 0xFF});
         }
 
-//        [TestMethod]
-//        public void When_BytesToBigIntegersCalledWith_ByteLengthMultipleOfBlockSize_Should_ReturnCorrectData()
-//        {
-//            byte[] sampleInput = new byte[] {0xFF, 0xFF, 0xFF, 0xFF, 0x02, 0x02};
-//            BigInteger[] result = _dataChunker.BytesToBigIntegers(sampleInput, _blockSize);
-//            result.Should().BeEquivalentTo(new BigInteger[]
-//            {
-//                new BigInteger(new byte[] {0xFF, 0xFF, 0xFF}),
-//                new BigInteger(new byte[] {0xFF, 0x02, 0x02})
-//            });
-//        }
+        [TestMethod]
+        public void When_BytesToBigIntegersCalledWith_ByteLengthMultipleOfBlockSize_Should_ReturnCorrectData()
+        {
+            byte[] sampleInput = new byte[] {0xFF, 0xFF, 0xFF, 0xFF, 0x02, 0x02};
+            BigInteger[] result = _dataChunker.ChunkData(sampleInput, _blockSize);
+            result.Should().BeEquivalentTo(new BigInteger[]
+            {
+                new BigInteger(new byte[] {0xFF, 0xFF, 0xFF}),
+                new BigInteger(new byte[] {0xFF, 0x02, 0x02}),
+                new BigInteger(new byte[] {0x03, 0x03, 0x03}), 
+            });
+        }
 
         [TestMethod]
         public void When_MergeDataCalledWith_MultipleBigIntegers_Should_ReturnCorrectData()

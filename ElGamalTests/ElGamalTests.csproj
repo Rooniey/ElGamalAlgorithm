@@ -56,7 +56,6 @@
   <ItemGroup>
     <Compile Include="DataChunkerTests.cs" />
     <Compile Include="RandomNumberProviderMock.cs" />
-    <Compile Include="ElGamalAlgorithmTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimplePaddingStrategyTests.cs" />
   </ItemGroup>
