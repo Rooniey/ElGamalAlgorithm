@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ElGamalTests
 {
     [TestClass]
-    public class UnitTest1
+    public class BigIntegerTests
     {
         [TestMethod]
         public void GetBytesTest()
@@ -14,7 +14,7 @@ namespace ElGamalTests
             var firstBytes = new byte[] {0xFF, 0x00, 0xFF, 0x00};
 
             var bigint = new BigInteger(firstBytes);
-            var secondBytes = bigint.MyGetBytes();
+            var secondBytes = bigint.GetAllBytes();
             var secondInt = new BigInteger(secondBytes);
             firstBytes.Should().BeEquivalentTo(secondBytes);
             bigint.Should().BeEquivalentTo(secondInt);

@@ -1536,7 +1536,7 @@ namespace ElGamal
             return result;
         }
 
-        public byte[] MyGetBytes()
+        public byte[] GetAllBytes()
         {
             int numBits = BitCount();
 
@@ -1545,8 +1545,6 @@ namespace ElGamal
                 numBytes++;
 
             byte[] result = new byte[numBytes];
-
-            //Console.WriteLine(result.Length);
 
             int pos = 0;
             uint tempVal, val = _data[DataLength - 1];

@@ -35,8 +35,8 @@ namespace ElGamal.Services.Data
 
             for (int i = 0; i < encryptedValues.Length; i++)
             {
-                byte[] paddedC1 = AddPadding(encryptedValues[i].C1.MyGetBytes(), bytesInBlock);
-                byte[] paddedC2 = AddPadding(encryptedValues[i].C2.MyGetBytes(), bytesInBlock);
+                byte[] paddedC1 = AddPadding(encryptedValues[i].C1.GetAllBytes(), bytesInBlock);
+                byte[] paddedC2 = AddPadding(encryptedValues[i].C2.GetAllBytes(), bytesInBlock);
                 paddedC1.CopyTo(encryptedByteArray, (2 * i) * bytesInBlock);
                 paddedC2.CopyTo(encryptedByteArray, (2 * i + 1) * bytesInBlock);
             }
@@ -71,7 +71,7 @@ namespace ElGamal.Services.Data
             for (int i = 0; i < messages.Length; i++)
             {
                 byte[] padded =
-                    AddPadding(messages[i].MyGetBytes(), bytesInBlock);
+                    AddPadding(messages[i].GetAllBytes(), bytesInBlock);
                 padded.CopyTo(result, i * bytesInBlock);
             }
 
