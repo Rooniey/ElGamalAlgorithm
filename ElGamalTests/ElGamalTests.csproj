@@ -60,6 +60,7 @@
     <Compile Include="SimplePaddingStrategyTests.cs" />
     <Compile Include="KeyGenerationTests.cs" />
     <Compile Include="ElGamalAlgorithmTests.cs" />
+    <Compile Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

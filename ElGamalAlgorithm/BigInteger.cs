@@ -1535,5 +1535,76 @@ namespace ElGamal
 
             return result;
         }
+
+        public byte[] MyGetBytes()
+        {
+            int numBits = BitCount();
+
+            int numBytes = numBits >> 3;
+            if ((numBits & 0x7) != 0)
+                numBytes++;
+
+            byte[] result = new byte[numBytes];
+
+            //Console.WriteLine(result.Length);
+
+            int pos = 0;
+            uint tempVal, val = _data[DataLength - 1];
+
+            bool isHighestByteFound = false;
+
+            var shiftedVal = val >> 24;
+            var andVal = shiftedVal & 0xFF;
+            tempVal = andVal;
+
+            if (tempVal != 0)
+            {
+
+                result[pos++] = (byte)tempVal;
+                isHighestByteFound = true;
+            }
+
+            shiftedVal = val >> 16;
+            andVal = shiftedVal & 0xFF;
+            tempVal = andVal;
+
+            if ( isHighestByteFound || tempVal != 0)
+            {
+                result[pos++] = (byte)tempVal;
+                isHighestByteFound = true;
+            }
+
+            shiftedVal = val >> 8;
+            andVal = shiftedVal & 0xFF;
+            tempVal = andVal;
+
+            if ( isHighestByteFound ||  tempVal != 0)
+            {
+                result[pos++] = (byte)tempVal;
+                isHighestByteFound = true;
+            }
+
+            andVal = val & 0xFF;
+            tempVal = andVal;
+
+            if (isHighestByteFound || tempVal != 0 )
+            {
+                result[pos++] = (byte)tempVal;
+            }
+
+            for (int i = DataLength - 2; i >= 0; i--, pos += 4)
+            {
+                val = _data[i];
+                result[pos + 3] = (byte)(val & 0xFF);
+                val >>= 8;
+                result[pos + 2] = (byte)(val & 0xFF);
+                val >>= 8;
+                result[pos + 1] = (byte)(val & 0xFF);
+                val >>= 8;
+                result[pos] = (byte)(val & 0xFF);
+            }
+
+            return result;
+        }
     }
 }
