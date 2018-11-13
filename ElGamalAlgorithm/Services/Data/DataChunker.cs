@@ -50,11 +50,14 @@ namespace ElGamal.Services.Data
 
             for (int i = 0; i < data.Length; i += 2 * bytesInBlock)
             {
-                byte[] tmp = new byte[bytesInBlock];
-                Array.Copy(data, i, tmp, 0, bytesInBlock);
-                BigInteger paddedNumberC1 = new BigInteger(tmp);
-                Array.Copy(data, i + bytesInBlock, tmp, 0, bytesInBlock);
-                BigInteger paddedNumberC2 = new BigInteger(tmp);
+                byte[] tmp1 = new byte[bytesInBlock];
+                Array.Copy(data, i, tmp1, 0, bytesInBlock);
+                BigInteger paddedNumberC1 = new BigInteger(tmp1);
+
+                byte[] tmp2 = new byte[bytesInBlock];
+                Array.Copy(data, i + bytesInBlock, tmp2, 0, bytesInBlock);
+                BigInteger paddedNumberC2 = new BigInteger(tmp2);
+
                 encryptedByteArray[i / (2 * bytesInBlock)] = new ElGamalCiphertext() { C1 = paddedNumberC1, C2 = paddedNumberC2 };
             }
 

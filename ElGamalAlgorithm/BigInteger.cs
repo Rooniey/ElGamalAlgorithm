@@ -1234,6 +1234,35 @@ namespace ElGamal
                 DataLength = 1;
         }
 
+        public void GenerateRandomBitsFromZero(int bits, Random rand)
+        {
+            int dwords = bits >> 5;
+            int remBits = bits & 0x1F;
+
+            if (remBits != 0)
+                dwords++;
+
+            if (dwords > MaxLength)
+                throw (new ArithmeticException("Number of required bits > MaxLength."));
+
+            for (int i = 0; i < dwords; i++)
+                _data[i] = (uint)(rand.NextDouble() * 0x100000000);
+
+            for (int i = dwords; i < MaxLength; i++)
+                _data[i] = 0;
+
+            if (remBits != 0)
+            {
+                uint mask = (uint)(0xFFFFFFFF >> (32 - remBits));
+                _data[dwords - 1] &= mask;
+            }
+
+            DataLength = dwords;
+
+            if (DataLength == 0)
+                DataLength = 1;
+        }
+
 
         //***********************************************************************
         // Returns the position of the most significant bit in the BigInteger.

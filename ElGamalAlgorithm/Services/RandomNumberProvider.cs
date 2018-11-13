@@ -9,10 +9,9 @@ namespace ElGamal.Services
 
         public BigInteger GeneratePositiveNumberLessThan(BigInteger limit)
         {
-            //TODO generates at least one bit less number  
             BigInteger randomNumber = new BigInteger();
-            randomNumber.GenerateRandomBits(limit.BitCount() - 1, Random);
-            return randomNumber;
+            randomNumber.GenerateRandomBitsFromZero(limit.BitCount(), Random);
+            return (randomNumber % (limit - 1)) + 1;
         }
     }
 }
