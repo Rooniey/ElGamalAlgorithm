@@ -1,4 +1,5 @@
 ﻿using ElGamal.Model;
+using ElGamal.Services;
 using ElGamal.Services.Data;
 using ElGamal.Services.Data.Padding;
 using ElGamal.Services.Interfaces;
@@ -51,7 +52,7 @@ namespace ElGamal
 
         private ElGamalCiphertext Encrypt(BigInteger m, PublicKey key)
         {
-            BigInteger k = _randomNumberProvider.GeneratePositiveNumberLessThan(key.P - 1);
+            BigInteger k = (key.P - 1).genCoPrime(RandomNumberProvider.Random);
             BigInteger c1 = key.G.ModPow(k, key.P);
             BigInteger c2 = (key.Y.ModPow(k, key.P) * m) % key.P;
             return new ElGamalCiphertext() {C1 = c1, C2 = c2};

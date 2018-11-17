@@ -37,7 +37,7 @@ namespace ElGamalTests
         [TestMethod]
         public void AllTests()
         {
-            for (int j = 0; j < 5; j++)
+            for (int j = 0; j < 1; j++)
             {
                 Console.WriteLine($"{j} time start");
 
@@ -98,7 +98,7 @@ namespace ElGamalTests
 
         private ElGamalCiphertext Encrypt(BigInteger m, PublicKey key)
         {
-            BigInteger k = _randomProvider.GeneratePositiveNumberLessThan(key.P - 1);
+            BigInteger k = (key.P - 1).genCoPrime(RandomNumberProvider.Random);
             BigInteger c1 = key.G.ModPow(k, key.P);
             BigInteger c2 = (key.Y.ModPow(k, key.P) * m) % key.P;
             return new ElGamalCiphertext() { C1 = c1, C2 = c2 };
