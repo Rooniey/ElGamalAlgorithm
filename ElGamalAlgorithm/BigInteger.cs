@@ -6,7 +6,7 @@ namespace ElGamal
     {
         
         
-        public const int MaxLength = 129;
+        public const int MaxLength = 131;
 
         
 
